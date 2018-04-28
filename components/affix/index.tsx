@@ -95,6 +95,7 @@ export default class Affix extends React.Component<AffixProps, AffixState> {
   };
 
   private fixedNode: HTMLElement;
+  private placeholderNode: HTMLElement;
 
   setAffixStyle(e: any, affixStyle: React.CSSProperties | null) {
     const { onChange = noop, target = getDefaultTarget } = this.props;
@@ -121,6 +122,21 @@ export default class Affix extends React.Component<AffixProps, AffixState> {
       return;
     }
     this.setState({ placeholderStyle: placeholderStyle as React.CSSProperties });
+  }
+
+  syncPlaceholderStyle(e: any) {
+    const { affixStyle } = this.state;
+    if (!affixStyle) {
+      return;
+    }
+    this.placeholderNode.style.cssText = '';
+    this.setAffixStyle(e, {
+      ...affixStyle,
+      width: this.placeholderNode.offsetWidth,
+    });
+    this.setPlaceholderStyle({
+      width: this.placeholderNode.offsetWidth,
+    });
   }
 
   @throttleByAnimationFrameDecorator()
@@ -162,7 +178,6 @@ export default class Affix extends React.Component<AffixProps, AffixState> {
         position: 'fixed',
         top,
         left: targetRect.left + elemOffset.left,
-        maxHeight: `calc(100vh - ${top}px)`,
         width,
       });
       this.setPlaceholderStyle({
@@ -194,6 +209,10 @@ export default class Affix extends React.Component<AffixProps, AffixState> {
         this.setAffixStyle(e, null);
       }
       this.setPlaceholderStyle(null);
+    }
+
+    if (e.type === 'resize') {
+      this.syncPlaceholderStyle(e);
     }
   }
 
@@ -246,6 +265,10 @@ export default class Affix extends React.Component<AffixProps, AffixState> {
     this.fixedNode = node;
   }
 
+  savePlaceholderNode = (node: HTMLDivElement) => {
+    this.placeholderNode = node;
+  }
+
   render() {
     const className = classNames({
       [this.props.prefixCls || 'ant-affix']: this.state.affixStyle,
@@ -254,7 +277,7 @@ export default class Affix extends React.Component<AffixProps, AffixState> {
     const props = omit(this.props, ['prefixCls', 'offsetTop', 'offsetBottom', 'target', 'onChange']);
     const placeholderStyle = { ...this.state.placeholderStyle, ...this.props.style };
     return (
-      <div {...props} style={placeholderStyle}>
+      <div {...props} style={placeholderStyle} ref={this.savePlaceholderNode}>
         <div className={className} ref={this.saveFixedNode} style={this.state.affixStyle}>
           {this.props.children}
         </div>

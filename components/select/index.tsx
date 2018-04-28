@@ -16,7 +16,8 @@ export interface AbstractSelectProps {
   allowClear?: boolean;
   disabled?: boolean;
   style?: React.CSSProperties;
-  placeholder?: string;
+  tabIndex?: number;
+  placeholder?: string | React.ReactNode;
   defaultActiveFirstOption?: boolean;
   dropdownClassName?: string;
   dropdownStyle?: React.CSSProperties;
@@ -37,11 +38,15 @@ export interface SelectProps extends AbstractSelectProps {
   defaultValue?: SelectValue;
   mode?: 'default' | 'multiple' | 'tags' | 'combobox';
   optionLabelProp?: string;
-  onChange?: (value: SelectValue) => void;
-  onSelect?: (value: SelectValue, option: Object) => any;
+  onChange?: (value: SelectValue, option: React.ReactElement<any> | React.ReactElement<any>[]) => void;
+  onSelect?: (value: SelectValue, option: React.ReactElement<any>) => any;
   onDeselect?: (value: SelectValue) => any;
   onBlur?: () => any;
   onFocus?: () => any;
+  onPopupScroll?: () => any;
+  onInputKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  maxTagCount?: number;
+  maxTagPlaceholder?: React.ReactNode | ((omittedValues: SelectValue[]) => React.ReactNode);
   dropdownMatchSelectWidth?: boolean;
   optionFilterProp?: string;
   labelInValue?: boolean;
@@ -108,6 +113,16 @@ export default class Select extends React.Component<SelectProps, {}> {
     this.rcSelect = node;
   }
 
+  getNotFoundContent(locale: SelectLocale) {
+    const { notFoundContent, mode } = this.props;
+    const isCombobox = mode === 'combobox';
+    if (isCombobox) {
+      // AutoComplete don't have notFoundContent defaultly
+      return notFoundContent === undefined ? null : notFoundContent;
+    }
+    return notFoundContent === undefined ? locale.notFoundContent : notFoundContent;
+  }
+
   renderSelect = (locale: SelectLocale) => {
     const {
       prefixCls,
@@ -121,7 +136,7 @@ export default class Select extends React.Component<SelectProps, {}> {
       [`${prefixCls}-sm`]: size === 'small',
     }, className);
 
-    let { notFoundContent, optionLabelProp } = this.props;
+    let { optionLabelProp } = this.props;
     const isCombobox = mode === 'combobox';
     if (isCombobox) {
       // children 带 dom 结构时，无法填入输入框
@@ -134,8 +149,6 @@ export default class Select extends React.Component<SelectProps, {}> {
       combobox: isCombobox,
     };
 
-    const notFoundContentLocale = isCombobox ?
-      null : notFoundContent || locale.notFoundContent;
     return (
       <RcSelect
         {...restProps}
@@ -143,7 +156,7 @@ export default class Select extends React.Component<SelectProps, {}> {
         prefixCls={prefixCls}
         className={cls}
         optionLabelProp={optionLabelProp || 'children'}
-        notFoundContent={notFoundContentLocale}
+        notFoundContent={this.getNotFoundContent(locale)}
         ref={this.saveSelect}
       />
     );

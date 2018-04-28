@@ -22,18 +22,17 @@ import Icon from '../icon';
 
 const dimensionMap = {
   xs: '480px',
-  sm: '768px',
-  md: '992px',
-  lg: '1200px',
-  xl: '1600px',
+  sm: '576px',
+  md: '768px',
+  lg: '992px',
+  xl: '1200px',
+  xxl: '1600px',
 };
 
 export type CollapseType = 'clickTrigger' | 'responsive';
 
-export interface SiderProps {
-  style?: React.CSSProperties;
+export interface SiderProps extends React.HTMLAttributes<HTMLDivElement> {
   prefixCls?: string;
-  className?: string;
   collapsible?: boolean;
   collapsed?: boolean;
   defaultCollapsed?: boolean;
@@ -42,16 +41,16 @@ export interface SiderProps {
   trigger?: React.ReactNode;
   width?: number | string;
   collapsedWidth?: number | string;
-  breakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  breakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 }
 
-export interface SliderState {
+export interface SiderState {
   collapsed?: boolean;
   below: boolean;
   belowShow?: boolean;
 }
 
-export interface SliderContext {
+export interface SiderContext {
   siderCollapsed: boolean;
 }
 
@@ -63,7 +62,7 @@ const generateId = (() => {
   };
 })();
 
-export default class Sider extends React.Component<SiderProps, SliderState> {
+export default class Sider extends React.Component<SiderProps, SiderState> {
   static __ANT_LAYOUT_SIDER: any = true;
 
   static defaultProps = {
@@ -78,6 +77,7 @@ export default class Sider extends React.Component<SiderProps, SliderState> {
 
   static childContextTypes = {
     siderCollapsed: PropTypes.bool,
+    collapsedWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
   static contextTypes = {
@@ -112,6 +112,7 @@ export default class Sider extends React.Component<SiderProps, SliderState> {
   getChildContext() {
     return {
       siderCollapsed: this.state.collapsed,
+      collapsedWidth: this.props.collapsedWidth,
     };
   }
 
@@ -181,7 +182,7 @@ export default class Sider extends React.Component<SiderProps, SliderState> {
       'defaultCollapsed', 'onCollapse', 'breakpoint']);
     const siderWidth = this.state.collapsed ? collapsedWidth : width;
     // special trigger when collapsedWidth == 0
-    const zeroWidthTrigger = collapsedWidth === 0 || collapsedWidth === '0' ? (
+    const zeroWidthTrigger = collapsedWidth === 0 || collapsedWidth === '0' || collapsedWidth === '0px' ? (
       <span onClick={this.toggle} className={`${prefixCls}-zero-width-trigger`}>
         <Icon type="bars" />
       </span>
@@ -200,18 +201,21 @@ export default class Sider extends React.Component<SiderProps, SliderState> {
         </div>
       ) : null
     );
+    // For collapsedWidth="40px"
+    // https://github.com/ant-design/ant-design/issues/10140
+    const siderWidthNumber = (siderWidth || 0).toString().replace(/px$/, '');
     const divStyle = {
       ...style,
-      flex: `0 0 ${siderWidth}px`,
-      maxWidth: `${siderWidth}px`, // Fix width transition bug in IE11
-      minWidth: `${siderWidth}px`, // https://github.com/ant-design/ant-design/issues/6349
-      width: `${siderWidth}px`,
+      flex: `0 0 ${siderWidthNumber}px`,
+      maxWidth: `${siderWidthNumber}px`, // Fix width transition bug in IE11
+      minWidth: `${siderWidthNumber}px`, // https://github.com/ant-design/ant-design/issues/6349
+      width: `${siderWidthNumber}px`,
     };
     const siderCls = classNames(className, prefixCls, {
       [`${prefixCls}-collapsed`]: !!this.state.collapsed,
-      [`${prefixCls}-has-trigger`]: !!trigger,
+      [`${prefixCls}-has-trigger`]: collapsible && trigger !== null && !zeroWidthTrigger,
       [`${prefixCls}-below`]: !!this.state.below,
-      [`${prefixCls}-zero-width`]: siderWidth === 0 || siderWidth === '0',
+      [`${prefixCls}-zero-width`]: siderWidth === 0 || siderWidth === '0' || siderWidth === '0px',
     });
     return (
       <div className={siderCls} {...divProps} style={divStyle}>

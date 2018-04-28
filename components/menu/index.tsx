@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { findDOMNode } from 'react-dom';
 import RcMenu, { Divider, ItemGroup } from 'rc-menu';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -6,7 +7,7 @@ import animation from '../_util/openAnimation';
 import warning from '../_util/warning';
 import SubMenu from './SubMenu';
 import Item from './MenuItem';
-import { SliderContext } from '../layout/Sider';
+import { SiderContext } from '../layout/Sider';
 
 export interface SelectParam {
   key: string;
@@ -25,9 +26,11 @@ export interface ClickParam {
 
 export type MenuMode = 'vertical' | 'vertical-left' | 'vertical-right' | 'horizontal' | 'inline';
 
+export type MenuTheme = 'light' | 'dark';
+
 export interface MenuProps {
   id?: string;
-  theme?: 'light' | 'dark';
+  theme?: MenuTheme;
   mode?: MenuMode;
   selectable?: boolean;
   selectedKeys?: Array<string>;
@@ -46,6 +49,9 @@ export interface MenuProps {
   multiple?: boolean;
   inlineIndent?: number;
   inlineCollapsed?: boolean;
+  subMenuCloseDelay?: number;
+  subMenuOpenDelay?: number;
+  getPopupContainer?: (triggerNode: Element) => HTMLElement;
 }
 
 export interface MenuState {
@@ -60,7 +66,7 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
   static defaultProps = {
     prefixCls: 'ant-menu',
     className: '',
-    theme: 'light',  // or dark
+    theme: 'light' as MenuTheme,  // or dark
   };
   static childContextTypes = {
     inlineCollapsed: PropTypes.bool,
@@ -68,8 +74,10 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
   };
   static contextTypes = {
     siderCollapsed: PropTypes.bool,
+    collapsedWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
   switchModeFromInline: boolean;
+  leaveAnimationExecutedWhenInlineCollapsed: boolean;
   inlineOpenKeys: string[] = [];
   constructor(props: MenuProps) {
     super(props);
@@ -102,7 +110,8 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
       antdMenuTheme: this.props.theme,
     };
   }
-  componentWillReceiveProps(nextProps: MenuProps, nextContext: SliderContext) {
+  componentWillReceiveProps(nextProps: MenuProps, nextContext: SiderContext) {
+    const { prefixCls } = this.props;
     if (this.props.mode === 'inline' &&
         nextProps.mode !== 'inline') {
       this.switchModeFromInline = true;
@@ -113,7 +122,9 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
     }
     if ((nextProps.inlineCollapsed && !this.props.inlineCollapsed) ||
         (nextContext.siderCollapsed && !this.context.siderCollapsed)) {
-      this.switchModeFromInline = !!this.state.openKeys.length;
+      const menuNode = findDOMNode(this) as Element;
+      this.switchModeFromInline =
+        !!this.state.openKeys.length && !!menuNode.querySelectorAll(`.${prefixCls}-submenu-open`).length;
       this.inlineOpenKeys = this.state.openKeys;
       this.setState({ openKeys: [] });
     }
@@ -223,6 +234,15 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
       menuProps.openTransitionName = menuOpenAnimation;
     } else {
       menuProps.openAnimation = menuOpenAnimation;
+    }
+
+    // https://github.com/ant-design/ant-design/issues/8587
+    const { collapsedWidth } = this.context;
+    if (
+      this.getInlineCollapsed() &&
+      (collapsedWidth === 0 || collapsedWidth === '0' || collapsedWidth === '0px')
+    ) {
+      return null;
     }
 
     return <RcMenu {...this.props} {...menuProps} />;

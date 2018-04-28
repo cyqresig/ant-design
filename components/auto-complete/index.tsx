@@ -8,7 +8,7 @@ import InputElement from './InputElement';
 export interface DataSourceItemObject { value: string; text: string; }
 export type DataSourceItemType = string | DataSourceItemObject;
 
-export interface InputProps {
+export interface AutoCompleteInputProps {
   onChange?: React.FormEventHandler<any>;
   value: any;
 }
@@ -16,12 +16,12 @@ export interface InputProps {
 export type ValidInputElement =
   HTMLInputElement |
   HTMLTextAreaElement |
-  React.ReactElement<InputProps>;
+  React.ReactElement<AutoCompleteInputProps>;
 
 export interface AutoCompleteProps extends AbstractSelectProps {
   value?: SelectValue;
   defaultValue?: SelectValue;
-  dataSource: DataSourceItemType[];
+  dataSource?: DataSourceItemType[];
   optionLabelProp?: string;
   onChange?: (value: SelectValue) => void;
   onSelect?: (value: SelectValue, option: Object) => any;

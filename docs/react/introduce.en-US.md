@@ -30,7 +30,7 @@ Following the Ant Design specification, we developed a React UI library `antd` t
 - An enterprise-class UI design language for web applications.
 - A set of high-quality React components out of the box.
 - Written in TypeScript with complete defined types.
-- A npm + webpack + [dva](https://github.com/dvajs/dva) front-end development workflow.
+- The whole package of development and design resources and tools.
 
 ## Environment Support
 
@@ -41,7 +41,6 @@ Following the Ant Design specification, we developed a React UI library `antd` t
 ## Version
 
 - Stable: [![npm package](https://img.shields.io/npm/v/antd.svg?style=flat-square)](https://www.npmjs.org/package/antd)
-- Next：  [![npm (next)](https://img.shields.io/npm/v/antd/next.svg?style=flat-square)](https://www.npmjs.org/package/antd)
 
 You can subscribe to this feed for new version notifications: https://github.com/ant-design/ant-design/releases.atom
 
@@ -68,6 +67,8 @@ Add `script` and `link` tags in your browser and use the global variable `antd`.
 We provide `antd.js` `antd.css` and `antd.min.js` `antd.min.css` under `antd/dist` in antd's npm package. You can also download these files directly from [![CDNJS](https://img.shields.io/cdnjs/v/antd.svg?style=flat-square)](https://cdnjs.com/libraries/antd) or [unpkg](https://unpkg.com/).
 
 > **We strongly discourage loading the entire files** this will add bloat to your application and make it more difficult to receive bugfixes and updates. Antd is intended to be used in conjunction with a build tool, such as [webpack](https://webpack.github.io/), which will make it easy to import only the parts of antd that you are using.
+
+> Note: you should import moment before using antd.js after `3.0`.
 
 ## Usage
 

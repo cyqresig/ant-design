@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import omit from 'omit.js';
@@ -33,7 +34,7 @@ function insertSpace(child: React.ReactChild, needInserted: boolean) {
   return child;
 }
 
-export type ButtonType = 'primary' | 'ghost' | 'dashed' | 'danger';
+export type ButtonType = 'default' | 'primary' | 'ghost' | 'dashed' | 'danger';
 export type ButtonShape = 'circle' | 'circle-outline';
 export type ButtonSize = 'small' | 'default' | 'large';
 
@@ -46,6 +47,9 @@ export interface ButtonProps {
   onClick?: React.FormEventHandler<any>;
   onMouseUp?: React.FormEventHandler<any>;
   onMouseDown?: React.FormEventHandler<any>;
+  onKeyPress?: React.KeyboardEventHandler<any>;
+  onKeyDown?: React.KeyboardEventHandler<any>;
+  tabIndex?: number;
   loading?: boolean | { delay?: number };
   disabled?: boolean;
   style?: React.CSSProperties;
@@ -86,7 +90,12 @@ export default class Button extends React.Component<ButtonProps, any> {
     this.state = {
       loading: props.loading,
       clicked: false,
+      hasTwoCNChar: false,
     };
+  }
+
+  componentDidMount() {
+    this.fixTwoCNChar();
   }
 
   componentWillReceiveProps(nextProps: ButtonProps) {
@@ -104,12 +113,33 @@ export default class Button extends React.Component<ButtonProps, any> {
     }
   }
 
+  componentDidUpdate() {
+    this.fixTwoCNChar();
+  }
+
   componentWillUnmount() {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
     if (this.delayTimeout) {
       clearTimeout(this.delayTimeout);
+    }
+  }
+
+  fixTwoCNChar() {
+    // Fix for HOC usage like <FormatMessage />
+    const node = (findDOMNode(this) as HTMLElement);
+    const buttonText = node.textContent || node.innerText;
+    if (this.isNeedInserted() && isTwoCNChar(buttonText)) {
+      if (!this.state.hasTwoCNChar) {
+        this.setState({
+          hasTwoCNChar: true,
+        });
+      }
+    } else if (this.state.hasTwoCNChar) {
+      this.setState({
+        hasTwoCNChar: false,
+      });
     }
   }
 
@@ -125,12 +155,18 @@ export default class Button extends React.Component<ButtonProps, any> {
     }
   }
 
+  isNeedInserted() {
+    const { loading, icon, children } = this.props;
+    const iconType = loading ? 'loading' : icon;
+    return React.Children.count(children) === 1 && (!iconType || iconType === 'loading');
+  }
+
   render() {
     const {
       type, shape, size, className, htmlType, children, icon, prefixCls, ghost, ...others,
     } = this.props;
 
-    const { loading, clicked } = this.state;
+    const { loading, clicked, hasTwoCNChar } = this.state;
 
     // large => lg
     // small => sm
@@ -155,12 +191,13 @@ export default class Button extends React.Component<ButtonProps, any> {
       [`${prefixCls}-loading`]: loading,
       [`${prefixCls}-clicked`]: clicked,
       [`${prefixCls}-background-ghost`]: ghost,
+      [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar,
     });
 
     const iconType = loading ? 'loading' : icon;
     const iconNode = iconType ? <Icon type={iconType} /> : null;
-    const needInserted = React.Children.count(children) === 1 && (!iconType || iconType === 'loading');
-    const kids = children ? React.Children.map(children, child => insertSpace(child, needInserted)) : null;
+    const kids = (children || children === 0)
+      ? React.Children.map(children, child => insertSpace(child, this.isNeedInserted())) : null;
 
     return (
       <ComponentProp

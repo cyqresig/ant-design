@@ -7,7 +7,7 @@ title:
 
 ## zh-CN
 
-此处列出 Ant Design 中需要国际化支持的组件，你可以在演示里切换语言。涉及时间的组件请注意时区设置 [DatePicker](/components/date-picker/#components-date-picker-demo-locale)。
+此处列出 Ant Design 中需要国际化支持的组件，你可以在演示里切换语言。
 
 ## en-US
 
@@ -125,8 +125,8 @@ class App extends React.Component {
       <div>
         <div className="change-locale">
           <span style={{ marginRight: 16 }}>Change locale of components: </span>
-          <Radio.Group defaultValue={null} onChange={this.changeLocale}>
-            <Radio.Button key="en" value={null}>English</Radio.Button>
+          <Radio.Group defaultValue={undefined} onChange={this.changeLocale}>
+            <Radio.Button key="en" value={undefined}>English</Radio.Button>
             <Radio.Button key="cn" value={zhCN}>中文</Radio.Button>
           </Radio.Group>
         </div>

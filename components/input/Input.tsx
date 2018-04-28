@@ -18,6 +18,7 @@ export interface AbstractInputProps {
   className?: string;
   defaultValue?: any;
   value?: any;
+  tabIndex?: number;
   style?: React.CSSProperties;
 }
 
@@ -27,17 +28,18 @@ export interface InputProps extends AbstractInputProps {
   id?: number | string;
   name?: string;
   size?: 'large' | 'default' | 'small';
-  maxLength?: string;
+  maxLength?: number | string;
   disabled?: boolean;
   readOnly?: boolean;
   addonBefore?: React.ReactNode;
   addonAfter?: React.ReactNode;
-  onPressEnter?: React.FormEventHandler<any>;
-  onKeyDown?: React.FormEventHandler<any>;
+  onPressEnter?: React.FormEventHandler<HTMLInputElement>;
+  onKeyDown?: React.FormEventHandler<HTMLInputElement>;
+  onKeyUp?: React.FormEventHandler<HTMLInputElement>;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  onClick?: React.FormEventHandler<any>;
-  onFocus?: React.FormEventHandler<any>;
-  onBlur?: React.FormEventHandler<any>;
+  onClick?: React.FormEventHandler<HTMLInputElement>;
+  onFocus?: React.FormEventHandler<HTMLInputElement>;
+  onBlur?: React.FormEventHandler<HTMLInputElement>;
   autoComplete?: string;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
@@ -63,7 +65,10 @@ export default class Input extends React.Component<InputProps, any> {
       PropTypes.number,
     ]),
     size: PropTypes.oneOf(['small', 'default', 'large']),
-    maxLength: PropTypes.string,
+    maxLength: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
     disabled: PropTypes.bool,
     value: PropTypes.any,
     defaultValue: PropTypes.any,
@@ -74,6 +79,7 @@ export default class Input extends React.Component<InputProps, any> {
     autosize: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
     onPressEnter: PropTypes.func,
     onKeyDown: PropTypes.func,
+    onKeyUp: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     prefix: PropTypes.node,

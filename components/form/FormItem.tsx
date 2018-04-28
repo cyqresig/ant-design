@@ -3,7 +3,6 @@ import * as ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Animate from 'rc-animate';
-import PureRenderMixin from 'rc-util/lib/PureRenderMixin';
 import Row from '../grid/row';
 import Col, { ColProps } from '../grid/col';
 import warning from '../_util/warning';
@@ -56,16 +55,14 @@ export default class FormItem extends React.Component<FormItemProps, any> {
 
   context: FormItemContext;
 
+  state = { helpShow: false };
+
   componentDidMount() {
     warning(
       this.getControls(this.props.children, true).length <= 1,
       '`Form.Item` cannot generate `validateStatus` and `help` automatically, ' +
       'while there are more than one `getFieldDecorator` in it.',
     );
-  }
-
-  shouldComponentUpdate(...args: any[]) {
-    return PureRenderMixin.shouldComponentUpdate.apply(this, args);
   }
 
   getHelpMsg() {
@@ -89,7 +86,7 @@ export default class FormItem extends React.Component<FormItemProps, any> {
 
       const child = childrenArray[i] as React.ReactElement<any>;
       if (child.type &&
-          (child.type as any === FormItem || (child.type as any).displayName === 'FormItem')) {
+        (child.type as any === FormItem || (child.type as any).displayName === 'FormItem')) {
         continue;
       }
       if (!child.props) {
@@ -126,6 +123,10 @@ export default class FormItem extends React.Component<FormItemProps, any> {
     return this.getChildProp(FIELD_DATA_PROP);
   }
 
+  onHelpAnimEnd = (_key: string, helpShow: boolean) => {
+    this.setState({ helpShow });
+  }
+
   renderHelp() {
     const prefixCls = this.props.prefixCls;
     const help = this.getHelpMsg();
@@ -135,7 +136,13 @@ export default class FormItem extends React.Component<FormItemProps, any> {
       </div>
     ) : null;
     return (
-      <Animate transitionName="show-help" component="" transitionAppear key="help">
+      <Animate
+        transitionName="show-help"
+        component=""
+        transitionAppear
+        key="help"
+        onEnd={this.onHelpAnimEnd}
+      >
         {children}
       </Animate>
     );
@@ -174,9 +181,9 @@ export default class FormItem extends React.Component<FormItemProps, any> {
       this.getValidateStatus() :
       props.validateStatus;
 
-    let classes = '';
+    let classes = `${this.props.prefixCls}-item-control`;
     if (validateStatus) {
-      classes = classNames({
+      classes = classNames(`${this.props.prefixCls}-item-control`, {
         'has-feedback': props.hasFeedback || validateStatus === 'validating',
         'has-success': validateStatus === 'success',
         'has-warning': validateStatus === 'warning',
@@ -185,8 +192,9 @@ export default class FormItem extends React.Component<FormItemProps, any> {
       });
     }
     return (
-      <div className={`${this.props.prefixCls}-item-control ${classes}`}>
-        {c1}{c2}{c3}
+      <div className={classes}>
+        <span className={`${this.props.prefixCls}-item-children`}>{c1}</span>
+        {c2}{c3}
       </div>
     );
   }
@@ -222,14 +230,21 @@ export default class FormItem extends React.Component<FormItemProps, any> {
 
   // Resolve duplicated ids bug between different forms
   // https://github.com/ant-design/ant-design/issues/7351
-  onLabelClick = () => {
+  onLabelClick = (e: any) => {
+    const { label } = this.props;
     const id = this.props.id || this.getId();
     if (!id) {
       return;
     }
     const controls = document.querySelectorAll(`[id="${id}"]`);
     if (controls.length !== 1) {
-      const control = ReactDOM.findDOMNode(this).querySelector(`[id="${id}"]`) as HTMLElement;
+      // Only prevent in default situation
+      // Avoid preventing event in `label={<a href="xx">link</a>}``
+      if (typeof label === 'string') {
+        e.preventDefault();
+      }
+      const formItemNode = ReactDOM.findDOMNode(this) as Element;
+      const control = formItemNode.querySelector(`[id="${id}"]`) as HTMLElement;
       if (control && control.focus) {
         control.focus();
       }
@@ -291,7 +306,7 @@ export default class FormItem extends React.Component<FormItemProps, any> {
     const style = props.style;
     const itemClassName = {
       [`${prefixCls}-item`]: true,
-      [`${prefixCls}-item-with-help`]: !!this.getHelpMsg(),
+      [`${prefixCls}-item-with-help`]: !!this.getHelpMsg() || this.state.helpShow,
       [`${prefixCls}-item-no-colon`]: !props.colon,
       [`${props.className}`]: !!props.className,
     };

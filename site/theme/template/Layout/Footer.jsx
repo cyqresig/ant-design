@@ -84,17 +84,12 @@ class Footer extends React.Component {
 
   render() {
     return (
-      <footer id="footer" className="dark">
+      <footer id="footer">
         <div className="footer-wrap">
           <Row>
-            <Col lg={6} sm={24} xs={24}>
+            <Col md={6} sm={24} xs={24}>
               <div className="footer-center">
-                <h2>Ant Design</h2>
-                <div>
-                  <a target="_blank " href="https://github.com/ant-design/ant-design">
-                    GitHub
-                  </a>
-                </div>
+                <h2><FormattedMessage id="app.footer.resources" /></h2>
                 <div>
                   <a href="http://pro.ant.design">Ant Design Pro</a>
                 </div>
@@ -112,39 +107,6 @@ class Footer extends React.Component {
                   </a>
                 </div>
                 <div>
-                  <a target="_blank " href="http://ant-design.gitee.io/">
-                    <FormattedMessage id="app.footer.chinamirror" />
-                  </a>
-                </div>
-                <div style={{ marginTop: 16 }}>
-                  <ColorPicker
-                    type="sketch"
-                    small
-                    color={this.state.color}
-                    position="top"
-                    presetColors={[
-                      '#F5222D',
-                      '#FA541C',
-                      '#FA8C16',
-                      '#FAAD14',
-                      '#FADB14',
-                      '#A0D911',
-                      '#52C41A',
-                      '#13C2C2',
-                      '#1890FF',
-                      '#2F54EB',
-                      '#722ED1',
-                      '#EB2F96',
-                    ]}
-                    onChangeComplete={this.handleColorChange}
-                  />
-                </div>
-              </div>
-            </Col>
-            <Col lg={6} sm={24} xs={24}>
-              <div className="footer-center">
-                <h2><FormattedMessage id="app.footer.resources" /></h2>
-                <div>
                   <a href="http://scaffold.ant.design">Scaffolds</a>
                   <span> - </span>
                   <FormattedMessage id="app.footer.scaffolds" />
@@ -153,16 +115,12 @@ class Footer extends React.Component {
                   <a target="_blank" rel="noopener noreferrer" href="https://github.com/dvajs/dva">dva</a> - <FormattedMessage id="app.footer.dva" />
                 </div>
                 <div>
-                  <a target="_blank" rel="noopener noreferrer" href="https://github.com/dvajs/dva-cli">dva-cli</a> -
-                  <FormattedMessage id="app.footer.dev-tools" />
-                </div>
-                <div>
                   <a target="_blank" rel="noopener noreferrer" href="http://motion.ant.design">Ant Motion</a>
                   <span> - </span>
                   <FormattedMessage id="app.footer.motion" />
                 </div>
                 <div>
-                  <a target="_blank" rel="noopener noreferrer" href="http://library.ant.design/">AntD Library</a>
+                  <a target="_blank" rel="noopener noreferrer" href="http://library.ant.design/">Axure Library</a>
                   <span> - </span>
                   <FormattedMessage id="app.footer.antd-library" />
                 </div>
@@ -171,11 +129,53 @@ class Footer extends React.Component {
                   <span> - </span>
                   <FormattedMessage id="app.footer.antux" />
                 </div>
+                <div>
+                  <a target="_blank " href="http://ant-design.gitee.io/">
+                    <FormattedMessage id="app.footer.chinamirror" />
+                  </a>
+                </div>
               </div>
             </Col>
-            <Col lg={6} sm={24} xs={24}>
+            <Col md={6} sm={24} xs={24}>
               <div className="footer-center">
                 <h2><FormattedMessage id="app.footer.community" /></h2>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="http://zhuanlan.zhihu.com/antdesign">
+                    <FormattedMessage id="app.footer.zhihu" />
+                  </a>
+                </div>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="http://medium.com/ant-design/">
+                    Medium
+                  </a>
+                </div>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="http://twitter.com/antdesignui">
+                    Twitter
+                  </a>
+                </div>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="http://zhuanlan.zhihu.com/xtech">
+                    <FormattedMessage id="app.footer.zhihu.xtech" />
+                  </a>
+                </div>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="http://seeconf.alipay.com/">
+                    SEE Conf
+                  </a>
+                  <span> - </span>
+                  <FormattedMessage id="app.footer.seeconf" />
+                </div>
+              </div>
+            </Col>
+            <Col md={6} sm={24} xs={24}>
+              <div className="footer-center">
+                <h2><FormattedMessage id="app.footer.help" /></h2>
+                <div>
+                  <a target="_blank " href="https://github.com/ant-design/ant-design">
+                    GitHub
+                  </a>
+                </div>
                 <div>
                   <a href="/changelog">
                     <FormattedMessage id="app.footer.change-log" />
@@ -218,12 +218,26 @@ class Footer extends React.Component {
                 </div>
               </div>
             </Col>
-            <Col lg={6} sm={24} xs={24}>
+            <Col md={6} sm={24} xs={24}>
               <div className="footer-center">
                 <h2>
                   <img className="title-icon" src="https://gw.alipayobjects.com/zos/rmsportal/nBVXkrFdWHxbZlmMbsaH.svg" alt="" />
                   <FormattedMessage id="app.footer.more-product" />
                 </h2>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="https://yuque.com/">
+                    <FormattedMessage id="app.footer.yuque" />
+                  </a>
+                  <span> - </span>
+                  <FormattedMessage id="app.footer.yuque.slogan" />
+                </div>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="https://yunfengdie.com/">
+                    <FormattedMessage id="app.footer.fengdie" />
+                  </a>
+                  <span> - </span>
+                  <FormattedMessage id="app.footer.fengdie.slogan" />
+                </div>
                 <div>
                   <a target="_blank" rel="noopener noreferrer" href="https://antv.alipay.com/">AntV</a>
                   <span> - </span>
@@ -234,13 +248,41 @@ class Footer extends React.Component {
                   <span> - </span>
                   <FormattedMessage id="app.footer.eggjs" />
                 </div>
+                <div>
+                  <a target="_blank" rel="noopener noreferrer" href="http://xcloud.alipay.com/">
+                    <FormattedMessage id="app.footer.xcloud" />
+                  </a>
+                </div>
+                <div style={{ marginTop: 20 }}>
+                  <ColorPicker
+                    type="sketch"
+                    small
+                    color={this.state.color}
+                    position="top"
+                    presetColors={[
+                      '#F5222D',
+                      '#FA541C',
+                      '#FA8C16',
+                      '#FAAD14',
+                      '#FADB14',
+                      '#A0D911',
+                      '#52C41A',
+                      '#13C2C2',
+                      '#1890FF',
+                      '#2F54EB',
+                      '#722ED1',
+                      '#EB2F96',
+                    ]}
+                    onChangeComplete={this.handleColorChange}
+                  />
+                </div>
               </div>
             </Col>
           </Row>
         </div>
         <Row className="bottom-bar">
-          <Col lg={4} sm={24} />
-          <Col lg={20} sm={24}>
+          <Col md={4} sm={24} />
+          <Col md={20} sm={24}>
             <span
               style={{ lineHeight: '16px', paddingRight: 12, marginRight: 11, borderRight: '1px solid rgba(255, 255, 255, 0.55)' }}
             >
